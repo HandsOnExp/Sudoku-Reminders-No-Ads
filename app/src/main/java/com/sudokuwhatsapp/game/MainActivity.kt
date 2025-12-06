@@ -31,7 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sudokuwhatsapp.game.data.models.Difficulty
 import com.sudokuwhatsapp.game.ui.screens.DebugScreen
+import com.sudokuwhatsapp.game.ui.screens.GameScreen
 import com.sudokuwhatsapp.game.ui.theme.SudokuWhatsAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -49,32 +51,43 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun SudokuApp() {
     var showDebugScreen by remember { mutableStateOf(false) }
+    var showGameScreen by remember { mutableStateOf(false) }
 
-    if (showDebugScreen) {
-        DebugScreen(
-            onNavigateBack = { showDebugScreen = false }
-        )
-    } else {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            floatingActionButton = {
-                // Debug FAB - visible in development
-                FloatingActionButton(
-                    onClick = { showDebugScreen = true },
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Build,
-                        contentDescription = "Debug & Testing",
-                        tint = MaterialTheme.colorScheme.onTertiaryContainer
-                    )
-                }
-            }
-        ) { innerPadding ->
-            HelloSudokuScreen(
-                modifier = Modifier.padding(innerPadding),
-                onTitleLongPress = { showDebugScreen = true }
+    when {
+        showDebugScreen -> {
+            DebugScreen(
+                onNavigateBack = { showDebugScreen = false }
             )
+        }
+        showGameScreen -> {
+            GameScreen(
+                difficulty = Difficulty.MEDIUM,
+                onNavigateBack = { showGameScreen = false }
+            )
+        }
+        else -> {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                floatingActionButton = {
+                    // Debug FAB - visible in development
+                    FloatingActionButton(
+                        onClick = { showDebugScreen = true },
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Build,
+                            contentDescription = "Debug & Testing",
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    }
+                }
+            ) { innerPadding ->
+                HelloSudokuScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    onTitleLongPress = { showDebugScreen = true },
+                    onTitleClick = { showGameScreen = true }
+                )
+            }
         }
     }
 }
@@ -83,7 +96,8 @@ fun SudokuApp() {
 @Composable
 fun HelloSudokuScreen(
     modifier: Modifier = Modifier,
-    onTitleLongPress: () -> Unit = {}
+    onTitleLongPress: () -> Unit = {},
+    onTitleClick: () -> Unit = {}
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -107,7 +121,7 @@ fun HelloSudokuScreen(
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier.combinedClickable(
-                        onClick = { },
+                        onClick = onTitleClick,
                         onLongClick = onTitleLongPress
                     )
                 )
@@ -122,7 +136,7 @@ fun HelloSudokuScreen(
                 )
 
                 Text(
-                    text = "Long press title or tap 🔧 for debug",
+                    text = "Tap title to play • Long press for debug • Tap 🔧 for tests",
                     fontSize = 12.sp,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
