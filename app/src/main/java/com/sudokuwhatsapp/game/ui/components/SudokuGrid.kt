@@ -4,7 +4,10 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -12,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -48,26 +52,31 @@ fun SudokuGrid(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(1f)  // Keep it square
-            .padding(8.dp)
+            .aspectRatio(1f)
+            .padding(16.dp)
     ) {
-        // Draw the grid background and lines
-        Canvas(modifier = Modifier.matchParentSize()) {
-            val canvasWidth = size.width
-            val canvasHeight = size.height
-            val cellSize = canvasWidth / 9
+        // Background layer with grid lines
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
+            val width = size.width
+            val height = size.height
+            val cellSize = width / 9
 
-            // Draw grid lines
+            // Draw all grid lines
             for (i in 0..9) {
                 val offset = i * cellSize
-                val strokeWidth = if (i % 3 == 0) 3.dp.toPx() else 1.dp.toPx()
+                // Determine line thickness - thick borders every 3 cells
+                val strokeWidth = if (i % 3 == 0) 4.dp.toPx() else 1.dp.toPx()
                 val color = if (i % 3 == 0) SudokuGridDark else SudokuGridLight
 
                 // Vertical lines
                 drawLine(
                     color = color,
                     start = Offset(offset, 0f),
-                    end = Offset(offset, canvasHeight),
+                    end = Offset(offset, height),
                     strokeWidth = strokeWidth
                 )
 
@@ -75,21 +84,34 @@ fun SudokuGrid(
                 drawLine(
                     color = color,
                     start = Offset(0f, offset),
-                    end = Offset(canvasWidth, offset),
+                    end = Offset(width, offset),
                     strokeWidth = strokeWidth
                 )
             }
         }
 
-        // Draw cells and numbers
-        for (row in 0..8) {
-            for (col in 0..8) {
-                val cell = board.cells[row][col]
-                SudokuGridCell(
-                    cell = cell,
-                    isSelected = selectedCell == Pair(row, col),
-                    onClick = { onCellClick(row, col) }
-                )
+        // Cells layer with content
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            for (row in 0..8) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
+                    for (col in 0..8) {
+                        val cell = board.cells[row][col]
+                        SudokuGridCell(
+                            cell = cell,
+                            isSelected = selectedCell == Pair(row, col),
+                            onClick = { onCellClick(row, col) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxSize()
+                        )
+                    }
+                }
             }
         }
     }
@@ -102,10 +124,9 @@ fun SudokuGrid(
 private fun SudokuGridCell(
     cell: SudokuCell,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val cellSize = (1f / 9f)  // Fraction of parent size
-
     // Determine background color
     val backgroundColor = when {
         cell.isError -> SudokuErrorBackground
@@ -118,18 +139,15 @@ private fun SudokuGridCell(
     val fontWeight = if (cell.isGiven) FontWeight.Bold else FontWeight.Normal
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth(cellSize)
-            .aspectRatio(1f)
+        modifier = modifier
             .background(backgroundColor)
-            .clickable(onClick = onClick)
-            .padding(2.dp),
+            .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         if (cell.value != 0) {
             Text(
                 text = cell.value.toString(),
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 fontWeight = fontWeight,
                 color = textColor,
                 textAlign = TextAlign.Center
