@@ -1,34 +1,37 @@
 package com.sudokuwhatsapp.game
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sudokuwhatsapp.game.data.local.AllowedContact
-import com.sudokuwhatsapp.game.data.local.FilteredMessage
-import com.sudokuwhatsapp.game.data.models.Difficulty
-import com.sudokuwhatsapp.game.data.models.SudokuBoard
-import com.sudokuwhatsapp.game.data.models.SudokuCell
+import com.sudokuwhatsapp.game.ui.screens.DebugScreen
 import com.sudokuwhatsapp.game.ui.theme.SudokuWhatsAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -37,117 +40,94 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SudokuWhatsAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HelloSudokuScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        onTestPhase2Click = { testPhase2DataModels() }
-                    )
-                }
+                SudokuApp()
             }
         }
-    }
-
-    /**
-     * Test Phase 2 data models
-     * Verifies that all data models work correctly
-     */
-    private fun testPhase2DataModels() {
-        Log.d("Phase2Test", "=== Starting Phase 2 Data Models Test ===")
-
-        // 1. Test SudokuCell
-        val cell = SudokuCell(value = 5, isGiven = true, row = 0, col = 0)
-        Log.d("Phase2Test", "Cell created: $cell")
-        Log.d("Phase2Test", "Cell isEmpty: ${cell.isEmpty()}, getBox: ${cell.getBox()}")
-
-        // 2. Test all Difficulty levels
-        Log.d("Phase2Test", "--- Testing Difficulty Levels ---")
-        Difficulty.entries.forEach {
-            Log.d("Phase2Test", "Difficulty: ${it.hebrewName}, givens: ${it.givens}")
-        }
-
-        // 3. Test AllowedContact
-        val contact = AllowedContact(id = 1, displayName = "אבא", identifier = "אבא")
-        Log.d("Phase2Test", "Contact: $contact")
-
-        // 4. Test FilteredMessage
-        val message = FilteredMessage(
-            id = 1,
-            senderName = "אבא",
-            content = "שלום, מה שלומך?",
-            timestamp = System.currentTimeMillis(),
-            isFromGroup = false,
-            groupName = null,
-            isRead = false
-        )
-        Log.d("Phase2Test", "Message: $message")
-
-        // 5. Test SudokuBoard
-        val emptyBoard = SudokuBoard(
-            cells = List(9) { row ->
-                List(9) { col ->
-                    SudokuCell(value = 0, isGiven = false, row = row, col = col)
-                }
-            },
-            difficulty = Difficulty.MEDIUM,
-            startTimeMillis = System.currentTimeMillis(),
-            isPaused = false
-        )
-        Log.d("Phase2Test", "Board created with ${emptyBoard.cells.size}x${emptyBoard.cells[0].size} cells")
-        Log.d("Phase2Test", "Board isFilled: ${emptyBoard.isFilled()}, hasErrors: ${emptyBoard.hasErrors()}")
-        Log.d("Phase2Test", "Board difficulty: ${emptyBoard.difficulty.hebrewName}")
-
-        // Test helper methods
-        val firstRow = emptyBoard.getRow(0)
-        Log.d("Phase2Test", "First row has ${firstRow.size} cells")
-        val firstCol = emptyBoard.getColumn(0)
-        Log.d("Phase2Test", "First column has ${firstCol.size} cells")
-        val firstBox = emptyBoard.getBox(0)
-        Log.d("Phase2Test", "First box has ${firstBox.size} cells")
-
-        Log.d("Phase2Test", "=== Phase 2 Data Models Test Complete ===")
     }
 }
 
 @Composable
+fun SudokuApp() {
+    var showDebugScreen by remember { mutableStateOf(false) }
+
+    if (showDebugScreen) {
+        DebugScreen(
+            onNavigateBack = { showDebugScreen = false }
+        )
+    } else {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            floatingActionButton = {
+                // Debug FAB - visible in development
+                FloatingActionButton(
+                    onClick = { showDebugScreen = true },
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Build,
+                        contentDescription = "Debug & Testing",
+                        tint = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
+                }
+            }
+        ) { innerPadding ->
+            HelloSudokuScreen(
+                modifier = Modifier.padding(innerPadding),
+                onTitleLongPress = { showDebugScreen = true }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
 fun HelloSudokuScreen(
     modifier: Modifier = Modifier,
-    onTestPhase2Click: () -> Unit = {}
+    onTitleLongPress: () -> Unit = {}
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = stringResource(id = R.string.hello_sudoku),
-                fontSize = 32.sp,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.headlineLarge
-            )
-
-            Text(
-                text = stringResource(id = R.string.welcome_message),
-                fontSize = 18.sp,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-
-            Button(
-                onClick = onTestPhase2Click,
-                modifier = Modifier.padding(top = 32.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Test Phase 2",
-                    fontSize = 18.sp
+                    text = stringResource(id = R.string.hello_sudoku),
+                    fontSize = 32.sp,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier.combinedClickable(
+                        onClick = { },
+                        onLongClick = onTitleLongPress
+                    )
+                )
+
+                Text(
+                    text = stringResource(id = R.string.welcome_message),
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+
+                Text(
+                    text = "Long press title or tap 🔧 for debug",
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 24.dp)
                 )
             }
         }
