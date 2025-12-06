@@ -32,6 +32,9 @@ import com.sudokuwhatsapp.game.data.local.FilteredMessage
 import com.sudokuwhatsapp.game.data.models.Difficulty
 import com.sudokuwhatsapp.game.data.models.SudokuBoard
 import com.sudokuwhatsapp.game.data.models.SudokuCell
+import com.sudokuwhatsapp.game.game.GameValidator
+import com.sudokuwhatsapp.game.game.SudokuGenerator
+import com.sudokuwhatsapp.game.game.SudokuSolver
 import com.sudokuwhatsapp.game.ui.theme.SudokuWhatsAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,12 +100,12 @@ fun DebugScreen(
                     onClick = { testPhase2DataModels() }
                 )
 
-                // Phase 3 Tests - Placeholder
+                // Phase 3 Tests
                 DebugTestButton(
                     title = "Test Phase 3 - Generator",
-                    description = "Tests Sudoku puzzle generation (Coming Soon)",
+                    description = "Tests Sudoku puzzle generation, solver, and validator",
                     onClick = { testPhase3Generator() },
-                    enabled = false
+                    enabled = true
                 )
 
                 // Phase 6 Tests - Placeholder
@@ -211,11 +214,89 @@ private fun testPhase2DataModels() {
 }
 
 /**
- * Test Phase 3 puzzle generator
- * Placeholder for future implementation
+ * Test Phase 3 puzzle generator, solver, and validator
+ * Tests all game logic components
  */
 private fun testPhase3Generator() {
-    Log.d("Phase3Test", "=== Phase 3 Generator Test - Coming Soon ===")
+    Log.d("Phase3Test", "=== Starting Phase 3 Generator Test ===")
+
+    // 1. Test puzzle generation for each difficulty
+    Log.d("Phase3Test", "--- Testing Puzzle Generation ---")
+    Difficulty.entries.forEach { difficulty ->
+        try {
+            val board = SudokuGenerator.generate(difficulty)
+            val givenCount = board.cells.flatten().count { it.isGiven }
+            Log.d("Phase3Test", "${difficulty.hebrewName}: $givenCount givens (expected: ${difficulty.givens})")
+
+            // Print the board visually
+            Log.d("Phase3Test", "Board for ${difficulty.hebrewName}:")
+            board.cells.forEach { row ->
+                val rowStr = row.joinToString(" ") {
+                    if (it.value == 0) "." else it.value.toString()
+                }
+                Log.d("Phase3Test", rowStr)
+            }
+            Log.d("Phase3Test", "---")
+        } catch (e: Exception) {
+            Log.e("Phase3Test", "Error generating ${difficulty.hebrewName}: ${e.message}")
+        }
+    }
+
+    // 2. Test the solver
+    Log.d("Phase3Test", "--- Testing Solver ---")
+    try {
+        val board = SudokuGenerator.generate(Difficulty.EASY)
+        Log.d("Phase3Test", "Generated EASY puzzle for solving test")
+
+        val solved = SudokuSolver.solve(board.cells)
+        val isSolved = solved?.flatten()?.all { it.value != 0 } == true
+        Log.d("Phase3Test", "Solver works: $isSolved")
+
+        if (solved != null && isSolved) {
+            Log.d("Phase3Test", "Solved board:")
+            solved.forEach { row ->
+                val rowStr = row.joinToString(" ") { it.value.toString() }
+                Log.d("Phase3Test", rowStr)
+            }
+        }
+    } catch (e: Exception) {
+        Log.e("Phase3Test", "Error testing solver: ${e.message}")
+    }
+
+    // 3. Test validation
+    Log.d("Phase3Test", "--- Testing Validator ---")
+    try {
+        val testBoard = SudokuGenerator.generate(Difficulty.EASY)
+        val isComplete = GameValidator.isComplete(testBoard)
+        Log.d("Phase3Test", "Empty board complete: $isComplete (should be false)")
+
+        // Test if generated board has errors
+        val withErrors = GameValidator.findErrors(testBoard)
+        val hasErrors = withErrors.hasErrors()
+        Log.d("Phase3Test", "Generated board has errors: $hasErrors (should be false)")
+
+        // Test solver + validator together
+        val solved = SudokuSolver.solve(testBoard.cells)
+        if (solved != null) {
+            val solvedBoard = testBoard.copy(cells = solved)
+            val solvedIsComplete = GameValidator.isComplete(solvedBoard)
+            Log.d("Phase3Test", "Solved board complete: $solvedIsComplete (should be true)")
+        }
+    } catch (e: Exception) {
+        Log.e("Phase3Test", "Error testing validator: ${e.message}")
+    }
+
+    // 4. Test unique solution verification
+    Log.d("Phase3Test", "--- Testing Unique Solution ---")
+    try {
+        val board = SudokuGenerator.generate(Difficulty.MEDIUM)
+        val hasUnique = SudokuSolver.hasUniqueSolution(board.cells)
+        Log.d("Phase3Test", "Generated puzzle has unique solution: $hasUnique (should be true)")
+    } catch (e: Exception) {
+        Log.e("Phase3Test", "Error testing unique solution: ${e.message}")
+    }
+
+    Log.d("Phase3Test", "=== Phase 3 Generator Test Complete ===")
 }
 
 /**
