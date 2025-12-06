@@ -27,6 +27,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.sudokuwhatsapp.game.data.local.AllowedContact
 import com.sudokuwhatsapp.game.data.local.FilteredMessage
 import com.sudokuwhatsapp.game.data.models.Difficulty
@@ -35,12 +39,34 @@ import com.sudokuwhatsapp.game.data.models.SudokuCell
 import com.sudokuwhatsapp.game.game.GameValidator
 import com.sudokuwhatsapp.game.game.SudokuGenerator
 import com.sudokuwhatsapp.game.game.SudokuSolver
+import com.sudokuwhatsapp.game.ui.components.NumberPad
+import com.sudokuwhatsapp.game.ui.components.SudokuGrid
 import com.sudokuwhatsapp.game.ui.theme.SudokuWhatsAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DebugScreen(
     onNavigateBack: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    var showPhase4UI by remember { mutableStateOf(false) }
+
+    if (showPhase4UI) {
+        Phase4UITest(onNavigateBack = { showPhase4UI = false })
+    } else {
+        DebugMenuScreen(
+            onNavigateBack = onNavigateBack,
+            onShowPhase4UI = { showPhase4UI = true },
+            modifier = modifier
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DebugMenuScreen(
+    onNavigateBack: () -> Unit,
+    onShowPhase4UI: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -105,6 +131,14 @@ fun DebugScreen(
                     title = "Test Phase 3 - Generator",
                     description = "Tests Sudoku puzzle generation, solver, and validator",
                     onClick = { testPhase3Generator() },
+                    enabled = true
+                )
+
+                // Phase 4 Tests
+                DebugTestButton(
+                    title = "Test Phase 4 - UI Components",
+                    description = "Interactive Sudoku grid and number pad",
+                    onClick = onShowPhase4UI,
                     enabled = true
                 )
 
@@ -305,6 +339,84 @@ private fun testPhase3Generator() {
  */
 private fun testPhase6Notifications() {
     Log.d("Phase6Test", "=== Phase 6 Notifications Test - Coming Soon ===")
+}
+
+/**
+ * Phase 4 UI Test - Interactive Sudoku Grid and Number Pad
+ * Tests visual components with user interaction
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Phase4UITest(
+    onNavigateBack: () -> Unit = {}
+) {
+    // Generate a MEDIUM difficulty board
+    val board = remember { SudokuGenerator.generate(Difficulty.MEDIUM) }
+    var selectedCell by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Phase 4 - UI Test") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Info text
+            Text(
+                text = "Tap cells to select. Tap numbers to see logs.",
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            // Sudoku Grid
+            SudokuGrid(
+                board = board,
+                selectedCell = selectedCell,
+                onCellClick = { row, col ->
+                    selectedCell = Pair(row, col)
+                    Log.d("Phase4Test", "Cell selected: row=$row, col=$col")
+                }
+            )
+
+            // Number Pad
+            NumberPad(
+                onNumberClick = { number ->
+                    Log.d("Phase4Test", "Number $number clicked")
+                    if (selectedCell != null) {
+                        Log.d("Phase4Test", "Would place $number at ${selectedCell!!.first},${selectedCell!!.second}")
+                    }
+                },
+                onClearClick = {
+                    Log.d("Phase4Test", "Clear clicked")
+                    if (selectedCell != null) {
+                        Log.d("Phase4Test", "Would clear cell at ${selectedCell!!.first},${selectedCell!!.second}")
+                    }
+                }
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)
