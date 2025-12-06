@@ -1,15 +1,25 @@
 package com.sudokuwhatsapp.game.data.local
 
-// TODO: Phase 3 - Implement Room Entity for allowed contacts
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 
 /**
- * Room Entity to store allowed contacts
- * Will be implemented in Phase 3
+ * Room Entity representing an allowed contact for WhatsApp notification filtering
  *
- * Fields to include:
- * - id: Int (Primary Key)
- * - name: String
- * - phoneNumber: String (unique)
- * - isGroup: Boolean
- * - addedDate: Long
+ * @param id Unique identifier for the database (auto-generated)
+ * @param displayName Name shown in UI (e.g., "אבא", "אמא", "קבוצת תפילה")
+ * @param identifier What to match in notifications (phone number, contact name, or group name)
+ * @param addedDate Timestamp when this contact was added
  */
+@Entity(
+    tableName = "allowed_contacts",
+    indices = [Index(value = ["identifier"], unique = true)]
+)
+data class AllowedContact(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val displayName: String,
+    val identifier: String,
+    val addedDate: Long = System.currentTimeMillis()
+)
