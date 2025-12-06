@@ -3,8 +3,10 @@ package com.sudokuwhatsapp.game.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -23,6 +25,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +60,9 @@ fun GameScreen(
     val elapsedSeconds by viewModel.elapsedSeconds.collectAsState()
     val isPaused by viewModel.isPaused.collectAsState()
     val isGameWon by viewModel.isGameWon.collectAsState()
+    val mistakes by viewModel.mistakes.collectAsState()
+    val isGameOver by viewModel.isGameOver.collectAsState()
+    val wrongFlash by viewModel.wrongNumberFlash.collectAsState()
 
     // Start new game if board is null
     if (board == null) {
@@ -129,29 +135,58 @@ fun GameScreen(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 // Pause overlay or game content
-                if (isPaused && !isGameWon) {
+                if (isPaused && !isGameWon && !isGameOver) {
                     PausedOverlay()
                 } else {
-                    // Sudoku Grid
-                    board?.let { currentBoard ->
-                        SudokuGrid(
-                            board = currentBoard,
-                            selectedCell = selectedCell,
-                            onCellClick = { row, col ->
-                                viewModel.selectCell(row, col)
-                            }
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // Mistakes counter
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "טעויות: $mistakes/${GameViewModel.MAX_MISTAKES}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = if (mistakes >= 2) MaterialTheme.colorScheme.error
+                                       else MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        // Sudoku Grid
+                        board?.let { currentBoard ->
+                            SudokuGrid(
+                                board = currentBoard,
+                                selectedCell = selectedCell,
+                                wrongFlash = wrongFlash,
+                                onCellClick = { row, col ->
+                                    viewModel.selectCell(row, col)
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Number Pad
+                        val remainingNumbers = remember(board) {
+                            viewModel.getRemainingNumbers()
+                        }
+                        NumberPad(
+                            onNumberClick = { number ->
+                                viewModel.inputNumber(number)
+                            },
+                            onClearClick = {
+                                viewModel.clearCell()
+                            },
+                            remainingNumbers = remainingNumbers
                         )
                     }
-
-                    // Number Pad
-                    NumberPad(
-                        onNumberClick = { number ->
-                            viewModel.inputNumber(number)
-                        },
-                        onClearClick = {
-                            viewModel.clearCell()
-                        }
-                    )
                 }
             }
         }
@@ -161,6 +196,17 @@ fun GameScreen(
             WinDialog(
                 time = formatTime(elapsedSeconds),
                 difficulty = board?.difficulty?.hebrewName ?: "",
+                onDismiss = onNavigateBack,
+                onNewGame = {
+                    board?.difficulty?.let { viewModel.startNewGame(it) }
+                }
+            )
+        }
+
+        // Game Over dialog
+        if (isGameOver) {
+            GameOverDialog(
+                mistakes = mistakes,
                 onDismiss = onNavigateBack,
                 onNewGame = {
                     board?.difficulty?.let { viewModel.startNewGame(it) }
@@ -240,6 +286,57 @@ private fun WinDialog(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onNewGame) {
+                Text("משחק חדש")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("חזור")
+            }
+        }
+    )
+}
+
+/**
+ * Game Over dialog when player makes too many mistakes
+ */
+@Composable
+private fun GameOverDialog(
+    mistakes: Int,
+    onDismiss: () -> Unit,
+    onNewGame: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "😞 המשחק נגמר",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "עשית $mistakes טעויות",
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "נסה שוב!",
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
         },

@@ -33,6 +33,7 @@ import com.sudokuwhatsapp.game.ui.theme.SudokuGridLight
 import com.sudokuwhatsapp.game.ui.theme.SudokuLightBlue
 import com.sudokuwhatsapp.game.ui.theme.SudokuUserNumber
 import com.sudokuwhatsapp.game.ui.theme.SudokuWhatsAppTheme
+import com.sudokuwhatsapp.game.ui.theme.SudokuWrongFlash
 
 /**
  * Sudoku grid component displaying a 9x9 board
@@ -47,6 +48,7 @@ fun SudokuGrid(
     board: SudokuBoard,
     selectedCell: Pair<Int, Int>?,
     onCellClick: (Int, Int) -> Unit,
+    wrongFlash: Pair<Int, Int>? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -105,6 +107,7 @@ fun SudokuGrid(
                         SudokuGridCell(
                             cell = cell,
                             isSelected = selectedCell == Pair(row, col),
+                            isWrongFlash = wrongFlash == Pair(row, col),
                             onClick = { onCellClick(row, col) },
                             modifier = Modifier
                                 .weight(1f)
@@ -124,11 +127,13 @@ fun SudokuGrid(
 private fun SudokuGridCell(
     cell: SudokuCell,
     isSelected: Boolean,
+    isWrongFlash: Boolean = false,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Determine background color
     val backgroundColor = when {
+        isWrongFlash -> SudokuWrongFlash
         cell.isError -> SudokuErrorBackground
         isSelected -> SudokuLightBlue
         else -> Color.Transparent

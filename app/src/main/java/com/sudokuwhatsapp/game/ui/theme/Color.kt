@@ -17,6 +17,7 @@ val SudokuLightBlue = Color(0xFFBBDEFB)  // Selected cell background
 val SudokuUserNumber = Color(0xFF2196F3)  // User-entered numbers
 val SudokuGivenNumber = Color(0xFF000000)  // Pre-filled numbers (black)
 val SudokuErrorBackground = Color(0xFFFFCDD2)  // Light red for error cells
+val SudokuWrongFlash = Color(0xFFF44336)  // Bright red for wrong number flash
 val SudokuGridDark = Color(0xFF424242)  // Dark gray for grid lines
 val SudokuGridLight = Color(0xFFBDBDBD)  // Light gray for thin grid lines
 val WhatsAppGreen = Color(0xFF25D366)

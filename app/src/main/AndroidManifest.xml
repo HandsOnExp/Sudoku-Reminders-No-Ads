@@ -30,9 +30,8 @@
             </intent-filter>
         </activity>
 
-        <!-- Notification Listener Service (placeholder for Phase 2) -->
-        <!-- Will be implemented in Phase 2 for WhatsApp notification monitoring -->
-        <!--
+        <!-- Notification Listener Service for WhatsApp -->
+        <!-- Listens to WhatsApp notifications to trigger Sudoku challenges -->
         <service
             android:name=".service.WhatsAppNotificationListener"
             android:exported="false"
@@ -41,7 +40,6 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-        -->
 
     </application>
 

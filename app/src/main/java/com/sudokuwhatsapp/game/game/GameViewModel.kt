@@ -34,8 +34,21 @@ class GameViewModel : ViewModel() {
     private val _isGameWon = MutableStateFlow(false)
     val isGameWon: StateFlow<Boolean> = _isGameWon.asStateFlow()
 
+    private val _mistakes = MutableStateFlow(0)
+    val mistakes: StateFlow<Int> = _mistakes.asStateFlow()
+
+    private val _isGameOver = MutableStateFlow(false)
+    val isGameOver: StateFlow<Boolean> = _isGameOver.asStateFlow()
+
+    private val _wrongNumberFlash = MutableStateFlow<Pair<Int, Int>?>(null)
+    val wrongNumberFlash: StateFlow<Pair<Int, Int>?> = _wrongNumberFlash.asStateFlow()
+
     // Timer job
     private var timerJob: Job? = null
+
+    companion object {
+        const val MAX_MISTAKES = 3
+    }
 
     /**
      * Start a new game with the specified difficulty
@@ -53,6 +66,9 @@ class GameViewModel : ViewModel() {
         _elapsedSeconds.value = 0
         _isPaused.value = false
         _isGameWon.value = false
+        _mistakes.value = 0
+        _isGameOver.value = false
+        _wrongNumberFlash.value = null
 
         // Start timer
         startTimer()
@@ -85,7 +101,21 @@ class GameViewModel : ViewModel() {
 
         // Validate the move before placing
         if (!GameValidator.isValidMove(currentBoard, row, col, num)) {
-            // Invalid move - don't place the number
+            // Invalid move - increment mistakes and show flash
+            _mistakes.value += 1
+            _wrongNumberFlash.value = Pair(row, col)
+
+            // Clear flash after delay
+            viewModelScope.launch {
+                delay(500)
+                _wrongNumberFlash.value = null
+            }
+
+            // Check if game over due to mistakes
+            if (_mistakes.value >= MAX_MISTAKES) {
+                _isGameOver.value = true
+                pauseGame()
+            }
             return
         }
 
@@ -171,6 +201,38 @@ class GameViewModel : ViewModel() {
                     _elapsedSeconds.value += 1
                 }
             }
+        }
+    }
+
+    /**
+     * Get remaining count for each number (1-9)
+     * Returns a map of number to remaining count
+     */
+    fun getRemainingNumbers(): Map<Int, Int> {
+        val currentBoard = _board.value ?: return emptyMap()
+        val solution = currentBoard.solution ?: return emptyMap()
+
+        // Count how many of each number are in the solution
+        val totalCounts = mutableMapOf<Int, Int>()
+        for (row in solution) {
+            for (num in row) {
+                totalCounts[num] = (totalCounts[num] ?: 0) + 1
+            }
+        }
+
+        // Count how many of each number are already placed correctly
+        val placedCounts = mutableMapOf<Int, Int>()
+        for (row in currentBoard.cells) {
+            for (cell in row) {
+                if (cell.value != 0 && solution[cell.row][cell.col] == cell.value) {
+                    placedCounts[cell.value] = (placedCounts[cell.value] ?: 0) + 1
+                }
+            }
+        }
+
+        // Calculate remaining
+        return (1..9).associateWith { num ->
+            (totalCounts[num] ?: 0) - (placedCounts[num] ?: 0)
         }
     }
 
