@@ -130,9 +130,7 @@ fun GameScreen(
             ) {
                 // Pause overlay or game content
                 if (isPaused && !isGameWon) {
-                    PausedOverlay(
-                        onResume = { viewModel.resumeGame() }
-                    )
+                    PausedOverlay()
                 } else {
                     // Sudoku Grid
                     board?.let { currentBoard ->
@@ -176,9 +174,7 @@ fun GameScreen(
  * Paused overlay shown when game is paused
  */
 @Composable
-private fun PausedOverlay(
-    onResume: () -> Unit
-) {
+private fun PausedOverlay() {
     Column(
         modifier = Modifier
             .fillMaxSize()
