@@ -69,7 +69,7 @@ class GameViewModel : ViewModel() {
 
     /**
      * Input a number into the selected cell
-     * Only works if cell is not a given number
+     * Only works if cell is not a given number and move is valid
      */
     fun inputNumber(num: Int) {
         val currentBoard = _board.value ?: return
@@ -83,6 +83,12 @@ class GameViewModel : ViewModel() {
             return
         }
 
+        // Validate the move before placing
+        if (!GameValidator.isValidMove(currentBoard, row, col, num)) {
+            // Invalid move - don't place the number
+            return
+        }
+
         // Create new cell with the number
         val newCell = cell.copy(value = num)
 
@@ -93,7 +99,7 @@ class GameViewModel : ViewModel() {
             }
         }
 
-        // Validate and mark errors
+        // Validate and mark errors (should be none if validation works)
         val updatedBoard = currentBoard.copy(cells = newCells)
         val validatedBoard = GameValidator.findErrors(updatedBoard)
         _board.value = validatedBoard
