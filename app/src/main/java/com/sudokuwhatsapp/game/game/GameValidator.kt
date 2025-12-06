@@ -134,8 +134,20 @@ object GameValidator {
             return true
         }
 
+        // Temporarily clear the target cell before checking validity
+        // This prevents the current value from interfering with validation
+        val tempCells = board.cells.map { rowCells ->
+            rowCells.map { cell ->
+                if (cell.row == row && cell.col == col) {
+                    cell.copy(value = 0)
+                } else {
+                    cell
+                }
+            }
+        }
+
         // Check if this number conflicts with existing numbers
-        return SudokuSolver.isValidPlacement(board.cells, row, col, num)
+        return SudokuSolver.isValidPlacement(tempCells, row, col, num)
     }
 
     /**
