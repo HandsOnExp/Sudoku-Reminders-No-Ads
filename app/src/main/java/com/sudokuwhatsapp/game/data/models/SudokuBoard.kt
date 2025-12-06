@@ -12,7 +12,8 @@ data class SudokuBoard(
     val cells: List<List<SudokuCell>>,
     val difficulty: Difficulty,
     val startTimeMillis: Long = System.currentTimeMillis(),
-    val isPaused: Boolean = false
+    val isPaused: Boolean = false,
+    val solution: List<List<Int>>? = null  // The correct solution for validation
 ) {
     init {
         require(cells.size == 9) { "Board must have exactly 9 rows" }

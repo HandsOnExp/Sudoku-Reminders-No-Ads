@@ -134,8 +134,13 @@ object GameValidator {
             return true
         }
 
+        // If solution is available, check against it (strict mode)
+        if (board.solution != null) {
+            return board.solution[row][col] == num
+        }
+
+        // Fallback: Check Sudoku rules (lenient mode)
         // Temporarily clear the target cell before checking validity
-        // This prevents the current value from interfering with validation
         val tempCells = board.cells.map { rowCells ->
             rowCells.map { cell ->
                 if (cell.row == row && cell.col == col) {

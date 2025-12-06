@@ -31,12 +31,18 @@ object SudokuGenerator {
         // Step 4: Remove cells to create puzzle with desired difficulty
         val puzzleCells = removeCells(solvedCells, difficulty)
 
-        // Step 5: Return the board
+        // Step 5: Extract solution values
+        val solution = solvedCells.map { row ->
+            row.map { it.value }
+        }
+
+        // Step 6: Return the board with solution
         return SudokuBoard(
             cells = puzzleCells,
             difficulty = difficulty,
             startTimeMillis = System.currentTimeMillis(),
-            isPaused = false
+            isPaused = false,
+            solution = solution
         )
     }
 
