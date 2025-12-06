@@ -1,0 +1,102 @@
+# Claude.md Global Rules - Personal Configuration
+.claude/
+.env
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.temp
+*.tmp
+notes.txt
+*.md
+!README.md
+test-keys.js
+encrypt-*.js
+.playwright-mcp/
+
+# Android Studio Personal Configuration
+*.iml
+.gradle
+local.properties
+.idea/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+.idea/modules.xml
+.idea/navEditor.xml
+.idea/misc.xml
+*.hprof
+
+# Gradle
+.gradle/
+build/
+*/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+output.json
+captures/
+.externalNativeBuild
+.cxx
+google-services.json
+app/google-services.json
+
+# NDK
+obj/
+.externalNativeBuild/
+
+# IntelliJ
+*.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/misc.xml
+.idea/deploymentTargetDropDown.xml
+.idea/render.experimental.xml
+
+# Keystore files (NEVER commit these!)
+*.jks
+*.keystore
+keystore.properties
+key.properties
+
+# Local configuration file
+local.properties
+
+# OS-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node (if using React Native or similar)
+node_modules/
+
+# Backup files
+*.bak
+*~
+
+# Log Files
+*.log
+
+# Android Profiling
+*.hprof

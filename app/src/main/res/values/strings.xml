@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sudoku WhatsApp</string>
+    <string name="hello_sudoku">שלום סודוקו!</string>
+    <string name="welcome_message">ברוכים הבאים למשחק סודוקו עם התראות WhatsApp</string>
+</resources>
