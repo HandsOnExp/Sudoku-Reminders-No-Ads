@@ -1,13 +1,9 @@
 package com.sudokuwhatsapp.game
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.core.app.NotificationManagerCompat
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -142,11 +138,6 @@ fun HelloSudokuScreen(
     onTitleClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-    val isNotificationEnabled = remember {
-        mutableStateOf(isNotificationListenerEnabled(context))
-    }
-
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -184,51 +175,6 @@ fun HelloSudokuScreen(
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
-
-                // Notification Permission Button
-                if (!isNotificationEnabled.value) {
-                    Button(
-                        onClick = {
-                            openNotificationListenerSettings(context)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth(0.8f)
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = MaterialTheme.shapes.medium
-                            )
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = "🔔 אפשר הודעות WhatsApp",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "נדרש לפעילות המשחק",
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(top = 4.dp)
-                            )
-                        }
-                    }
-                } else {
-                    Text(
-                        text = "✓ גישה להודעות מופעלת",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
 
                 // Settings button
                 Button(
@@ -412,28 +358,4 @@ fun HelloSudokuScreenPreview() {
     SudokuWhatsAppTheme {
         HelloSudokuScreen()
     }
-}
-
-/**
- * Helper functions for notification listener permission
- */
-
-/**
- * Check if notification listener permission is granted
- */
-fun isNotificationListenerEnabled(context: Context): Boolean {
-    val packageName = context.packageName
-    val flat = Settings.Secure.getString(
-        context.contentResolver,
-        "enabled_notification_listeners"
-    )
-    return flat != null && flat.contains(packageName)
-}
-
-/**
- * Open system settings to grant notification listener permission
- */
-fun openNotificationListenerSettings(context: Context) {
-    val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-    context.startActivity(intent)
 }

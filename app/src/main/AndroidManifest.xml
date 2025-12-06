@@ -30,17 +30,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Notification Listener Service for WhatsApp -->
-        <!-- Listens to WhatsApp notifications to trigger Sudoku challenges -->
-        <service
-            android:name=".service.WhatsAppNotificationListener"
-            android:exported="false"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
-            <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService" />
-            </intent-filter>
-        </service>
-
     </application>
 
 </manifest>

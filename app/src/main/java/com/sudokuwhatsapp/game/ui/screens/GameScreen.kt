@@ -24,10 +24,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sudokuwhatsapp.game.data.models.Difficulty
 import com.sudokuwhatsapp.game.game.GameViewModel
+import com.sudokuwhatsapp.game.reminders.ReminderManager
 import com.sudokuwhatsapp.game.ui.components.NumberPad
 import com.sudokuwhatsapp.game.ui.components.SudokuGrid
 import com.sudokuwhatsapp.game.ui.theme.SudokuWhatsAppTheme
@@ -54,6 +57,24 @@ fun GameScreen(
     onNavigateBack: () -> Unit = {},
     viewModel: GameViewModel = viewModel()
 ) {
+    // Reminder manager
+    val context = LocalContext.current
+    val reminderManager: ReminderManager = viewModel(
+        factory = androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(
+            context.applicationContext as android.app.Application
+        )
+    )
+
+    val currentReminder by reminderManager.currentReminder.collectAsState()
+
+    // Start/stop reminders with game lifecycle
+    DisposableEffect(Unit) {
+        reminderManager.startReminders()
+        onDispose {
+            reminderManager.stopAllReminders()
+        }
+    }
+
     // Collect state from ViewModel
     val board by viewModel.board.collectAsState()
     val selectedCell by viewModel.selectedCell.collectAsState()
@@ -213,6 +234,14 @@ fun GameScreen(
                 }
             )
         }
+
+        // Reminder dialog
+        currentReminder?.let { reminder ->
+            ReminderDialog(
+                message = reminder.message,
+                onDismiss = { reminderManager.dismissReminder() }
+            )
+        }
     }
 }
 
@@ -348,6 +377,40 @@ private fun GameOverDialog(
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("חזור")
+            }
+        }
+    )
+}
+
+/**
+ * Reminder dialog shown at configured intervals
+ */
+@Composable
+private fun ReminderDialog(
+    message: String,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "⏰ תזכורת",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            Text(
+                text = message,
+                fontSize = 18.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("הבנתי")
             }
         }
     )
