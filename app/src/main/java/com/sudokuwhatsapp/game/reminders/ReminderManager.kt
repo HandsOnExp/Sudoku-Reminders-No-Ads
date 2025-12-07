@@ -9,8 +9,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -23,8 +27,30 @@ class ReminderManager(application: Application) : AndroidViewModel(application) 
 
     private val reminderJobs = mutableMapOf<String, Job>()
 
-    private val _currentReminder = MutableStateFlow<CustomReminder?>(null)
-    val currentReminder: StateFlow<CustomReminder?> = _currentReminder.asStateFlow()
+    private val _reminderQueue = MutableStateFlow<List<CustomReminder>>(emptyList())
+    val reminderQueue: StateFlow<List<CustomReminder>> = _reminderQueue.asStateFlow()
+
+    // Derived state for current reminder (first in queue)
+    val currentReminder: StateFlow<CustomReminder?> = _reminderQueue
+        .map { it.firstOrNull() }
+        .stateIn(scope, SharingStarted.Eagerly, null)
+
+    /**
+     * Add reminder to queue with duplicate detection
+     * Prevents the same reminder from being queued multiple times
+     */
+    private fun addReminderToQueue(reminder: CustomReminder) {
+        _reminderQueue.update { currentQueue ->
+            // Check if this reminder is already in the queue
+            val alreadyQueued = currentQueue.any { it.id == reminder.id }
+
+            if (!alreadyQueued) {
+                currentQueue + reminder  // Add to end of queue
+            } else {
+                currentQueue  // Don't add duplicates
+            }
+        }
+    }
 
     /**
      * Start all enabled reminder timers
@@ -40,8 +66,8 @@ class ReminderManager(application: Application) : AndroidViewModel(application) 
                 delay(reminder.intervalMinutes * 60 * 1000L)
 
                 while (true) {
-                    // Show reminder
-                    _currentReminder.value = reminder
+                    // Add reminder to queue
+                    addReminderToQueue(reminder)
 
                     // Wait for interval before next reminder
                     delay(reminder.intervalMinutes * 60 * 1000L)
@@ -57,14 +83,14 @@ class ReminderManager(application: Application) : AndroidViewModel(application) 
     fun stopAllReminders() {
         reminderJobs.values.forEach { it.cancel() }
         reminderJobs.clear()
-        _currentReminder.value = null
+        _reminderQueue.value = emptyList()
     }
 
     /**
      * Dismiss the current reminder
      */
     fun dismissReminder() {
-        _currentReminder.value = null
+        _reminderQueue.update { it.drop(1) }
     }
 
     override fun onCleared() {

@@ -66,6 +66,7 @@ fun GameScreen(
     )
 
     val currentReminder by reminderManager.currentReminder.collectAsState()
+    val reminderQueue by reminderManager.reminderQueue.collectAsState()
 
     // Start/stop reminders with game lifecycle
     DisposableEffect(Unit) {
@@ -239,6 +240,8 @@ fun GameScreen(
         currentReminder?.let { reminder ->
             ReminderDialog(
                 message = reminder.message,
+                currentPosition = 1,
+                totalCount = reminderQueue.size,
                 onDismiss = { reminderManager.dismissReminder() }
             )
         }
@@ -388,17 +391,32 @@ private fun GameOverDialog(
 @Composable
 private fun ReminderDialog(
     message: String,
+    currentPosition: Int,
+    totalCount: Int,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(
-                text = "⏰ תזכורת",
-                textAlign = TextAlign.Center,
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.headlineSmall
-            )
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "⏰ תזכורת",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+                // Show counter if multiple reminders in queue
+                if (totalCount > 1) {
+                    Text(
+                        text = "תזכורת $currentPosition מתוך $totalCount",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
         },
         text = {
             Text(
