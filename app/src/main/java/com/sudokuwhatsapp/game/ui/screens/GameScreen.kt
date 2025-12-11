@@ -482,6 +482,17 @@ private fun ExitConfirmationDialog(
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "",
+                    modifier = Modifier.height(0.dp)
+                )
+            }
+        },
+        confirmButton = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Continue button with time and difficulty
@@ -541,7 +552,6 @@ private fun ExitConfirmationDialog(
                 }
             }
         },
-        confirmButton = {},
         dismissButton = {}
     )
 }
