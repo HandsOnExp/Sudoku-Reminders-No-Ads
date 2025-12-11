@@ -26,7 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -68,6 +70,9 @@ fun GameScreen(
     val currentReminder by reminderManager.currentReminder.collectAsState()
     val reminderQueue by reminderManager.reminderQueue.collectAsState()
 
+    // Exit confirmation dialog state
+    var showExitDialog by remember { mutableStateOf(false) }
+
     // Start/stop reminders with game lifecycle
     DisposableEffect(Unit) {
         reminderManager.startReminders()
@@ -108,7 +113,7 @@ fun GameScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = { showExitDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back"
@@ -238,6 +243,19 @@ fun GameScreen(
                 onDismiss = onNavigateBack,
                 onNewGame = {
                     board?.difficulty?.let { viewModel.startNewGame(it) }
+                }
+            )
+        }
+
+        // Exit confirmation dialog
+        if (showExitDialog) {
+            ExitConfirmationDialog(
+                time = formatTime(elapsedSeconds),
+                difficulty = board?.difficulty?.hebrewName ?: "",
+                onContinue = { showExitDialog = false },
+                onNewGame = {
+                    showExitDialog = false
+                    onNavigateBack()
                 }
             )
         }
@@ -437,6 +455,94 @@ private fun ReminderDialog(
                 Text("הבנתי")
             }
         }
+    )
+}
+
+/**
+ * Exit confirmation dialog with Continue/New Game options
+ */
+@Composable
+private fun ExitConfirmationDialog(
+    time: String,
+    difficulty: String,
+    onContinue: () -> Unit,
+    onNewGame: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onContinue,
+        title = {
+            Text(
+                text = "Classic Sudoku",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Continue button with time and difficulty
+                Button(
+                    onClick = onContinue,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(72.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "המשך",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Column(
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            Text(
+                                text = time,
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                text = difficulty,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+
+                // New Game button
+                Button(
+                    onClick = onNewGame,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Text(
+                        text = "משחק חדש",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {}
     )
 }
 
