@@ -1,6 +1,5 @@
 package com.sudokuwhatsapp.game.ui.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -95,19 +94,14 @@ private fun NumberButton(
     Button(
         onClick = onClick,
         enabled = remainingCount > 0,
-        modifier = modifier
-            .height(64.dp)
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.outline,
-                shape = MaterialTheme.shapes.medium
-            ),
+        modifier = modifier.height(64.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
             disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
             disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        ),
+        shape = MaterialTheme.shapes.large
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -120,11 +114,7 @@ private fun NumberButton(
             )
             Text(
                 text = remainingCount.toString(),
-                fontSize = 12.sp,
-                color = if (remainingCount > 0)
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                else
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                fontSize = 12.sp
             )
         }
     }
@@ -140,17 +130,12 @@ private fun ClearButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier
-            .height(64.dp)
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.error,
-                shape = MaterialTheme.shapes.medium
-            ),
+        modifier = modifier.height(64.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-            contentColor = MaterialTheme.colorScheme.onErrorContainer
-        )
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = MaterialTheme.colorScheme.onError
+        ),
+        shape = MaterialTheme.shapes.large
     ) {
         Icon(
             imageVector = Icons.Default.Clear,

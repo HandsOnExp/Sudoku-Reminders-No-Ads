@@ -183,10 +183,16 @@ fun GameScreen(
 
                         // Sudoku Grid
                         board?.let { currentBoard ->
+                            // Get the number in the selected cell for highlighting
+                            val highlightNumber = selectedCell?.let { (row, col) ->
+                                currentBoard.cells[row][col].value
+                            } ?: 0
+
                             SudokuGrid(
                                 board = currentBoard,
                                 selectedCell = selectedCell,
                                 wrongFlash = wrongFlash,
+                                highlightNumber = highlightNumber,
                                 onCellClick = { row, col ->
                                     viewModel.selectCell(row, col)
                                 }

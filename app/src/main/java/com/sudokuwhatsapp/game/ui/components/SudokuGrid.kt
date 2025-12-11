@@ -41,6 +41,8 @@ import com.sudokuwhatsapp.game.ui.theme.SudokuWrongFlash
  * @param board The current game board state
  * @param selectedCell Currently selected cell coordinates (row, col), null if none selected
  * @param onCellClick Callback when a cell is clicked
+ * @param wrongFlash Cell to flash red for wrong number
+ * @param highlightNumber Number to highlight across the board (0 means no highlighting)
  * @param modifier Modifier for the grid
  */
 @Composable
@@ -49,6 +51,7 @@ fun SudokuGrid(
     selectedCell: Pair<Int, Int>?,
     onCellClick: (Int, Int) -> Unit,
     wrongFlash: Pair<Int, Int>? = null,
+    highlightNumber: Int = 0,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -108,6 +111,7 @@ fun SudokuGrid(
                             cell = cell,
                             isSelected = selectedCell == Pair(row, col),
                             isWrongFlash = wrongFlash == Pair(row, col),
+                            isHighlighted = highlightNumber != 0 && cell.value == highlightNumber,
                             onClick = { onCellClick(row, col) },
                             modifier = Modifier
                                 .weight(1f)
@@ -128,6 +132,7 @@ private fun SudokuGridCell(
     cell: SudokuCell,
     isSelected: Boolean,
     isWrongFlash: Boolean = false,
+    isHighlighted: Boolean = false,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -136,6 +141,7 @@ private fun SudokuGridCell(
         isWrongFlash -> SudokuWrongFlash
         cell.isError -> SudokuErrorBackground
         isSelected -> SudokuLightBlue
+        isHighlighted -> Color(0xFFE3F2FD) // Light blue highlight for matching numbers
         else -> Color.Transparent
     }
 
