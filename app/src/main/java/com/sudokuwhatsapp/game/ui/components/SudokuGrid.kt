@@ -58,7 +58,7 @@ fun SudokuGrid(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .padding(16.dp)
+            .padding(8.dp)
     ) {
         // Background layer with grid lines
         Canvas(

@@ -169,13 +169,13 @@ fun GameScreen(
                 } else {
                     Column(
                         modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceBetween
+                        verticalArrangement = Arrangement.Top
                     ) {
                         // Mistakes counter
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                .padding(horizontal = 16.dp, vertical = 4.dp),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -202,11 +202,12 @@ fun GameScreen(
                                 highlightNumber = highlightNumber,
                                 onCellClick = { row, col ->
                                     viewModel.selectCell(row, col)
-                                }
+                                },
+                                modifier = Modifier.weight(1f)
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
 
                         // Number Pad
                         val remainingNumbers = remember(board) {
