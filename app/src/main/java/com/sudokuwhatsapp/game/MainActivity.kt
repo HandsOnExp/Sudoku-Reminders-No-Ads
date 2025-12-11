@@ -216,14 +216,14 @@ fun DifficultySelectionDialog(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // Group difficulties into rows
-                    // Row 1: MEDIUM, EASY, BEGINNER (RTL order)
+                    // Row 1: BEGINNER, EASY, MEDIUM (RTL display order)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         DifficultyButton(
-                            difficulty = Difficulty.MEDIUM,
-                            onClick = { onDifficultySelected(Difficulty.MEDIUM) },
+                            difficulty = Difficulty.BEGINNER,
+                            onClick = { onDifficultySelected(Difficulty.BEGINNER) },
                             modifier = Modifier.weight(1f)
                         )
                         DifficultyButton(
@@ -232,20 +232,20 @@ fun DifficultySelectionDialog(
                             modifier = Modifier.weight(1f)
                         )
                         DifficultyButton(
-                            difficulty = Difficulty.BEGINNER,
-                            onClick = { onDifficultySelected(Difficulty.BEGINNER) },
+                            difficulty = Difficulty.MEDIUM,
+                            onClick = { onDifficultySelected(Difficulty.MEDIUM) },
                             modifier = Modifier.weight(1f)
                         )
                     }
 
-                    // Row 2: EXTREME, EXPERT, HARD (RTL order)
+                    // Row 2: HARD, EXPERT, EXTREME (RTL display order)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         DifficultyButton(
-                            difficulty = Difficulty.EXTREME,
-                            onClick = { onDifficultySelected(Difficulty.EXTREME) },
+                            difficulty = Difficulty.HARD,
+                            onClick = { onDifficultySelected(Difficulty.HARD) },
                             modifier = Modifier.weight(1f)
                         )
                         DifficultyButton(
@@ -254,8 +254,8 @@ fun DifficultySelectionDialog(
                             modifier = Modifier.weight(1f)
                         )
                         DifficultyButton(
-                            difficulty = Difficulty.HARD,
-                            onClick = { onDifficultySelected(Difficulty.HARD) },
+                            difficulty = Difficulty.EXTREME,
+                            onClick = { onDifficultySelected(Difficulty.EXTREME) },
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -296,6 +296,7 @@ private fun DifficultyButton(
     Button(
         onClick = onClick,
         modifier = modifier
+            .height(70.dp)
             .border(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.primary,
@@ -304,26 +305,28 @@ private fun DifficultyButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+        ),
+        contentPadding = ButtonDefaults.ContentPadding
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(vertical = 4.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 4.dp, vertical = 8.dp)
         ) {
             Text(
                 text = difficulty.hebrewName,
-                fontSize = 13.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                maxLines = 1,
-                softWrap = false
+                lineHeight = 16.sp
             )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = difficulty.givens.toString(),
-                fontSize = 11.sp,
-                textAlign = TextAlign.Center,
-                maxLines = 1
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center
             )
         }
     }
