@@ -58,7 +58,7 @@ fun SudokuGrid(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .padding(8.dp)
+            .padding(4.dp)
     ) {
         // Background layer with grid lines
         Canvas(
@@ -158,7 +158,7 @@ private fun SudokuGridCell(
         if (cell.value != 0) {
             Text(
                 text = cell.value.toString(),
-                fontSize = 20.sp,
+                fontSize = 28.sp,
                 fontWeight = fontWeight,
                 color = textColor,
                 textAlign = TextAlign.Center

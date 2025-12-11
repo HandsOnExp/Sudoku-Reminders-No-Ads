@@ -175,7 +175,7 @@ fun GameScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp),
+                                .padding(horizontal = 16.dp, vertical = 2.dp),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -207,7 +207,7 @@ fun GameScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(2.dp))
 
                         // Number Pad
                         val remainingNumbers = remember(board) {
