@@ -213,13 +213,13 @@ fun DifficultySelectionDialog(
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    // Group difficulties into rows
-                    // Row 1: BEGINNER, EASY, MEDIUM (RTL display order)
+                    // Group difficulties into rows of 2 for better spacing
+                    // Row 1: BEGINNER, EASY (RTL display order)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         DifficultyButton(
                             difficulty = Difficulty.BEGINNER,
@@ -231,23 +231,30 @@ fun DifficultySelectionDialog(
                             onClick = { onDifficultySelected(Difficulty.EASY) },
                             modifier = Modifier.weight(1f)
                         )
+                    }
+
+                    // Row 2: MEDIUM, HARD (RTL display order)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
                         DifficultyButton(
                             difficulty = Difficulty.MEDIUM,
                             onClick = { onDifficultySelected(Difficulty.MEDIUM) },
                             modifier = Modifier.weight(1f)
                         )
-                    }
-
-                    // Row 2: HARD, EXPERT, EXTREME (RTL display order)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
                         DifficultyButton(
                             difficulty = Difficulty.HARD,
                             onClick = { onDifficultySelected(Difficulty.HARD) },
                             modifier = Modifier.weight(1f)
                         )
+                    }
+
+                    // Row 3: EXPERT, EXTREME (RTL display order)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
                         DifficultyButton(
                             difficulty = Difficulty.EXPERT,
                             onClick = { onDifficultySelected(Difficulty.EXPERT) },
@@ -270,7 +277,7 @@ fun DifficultySelectionDialog(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
+                            .padding(top = 4.dp)
                     )
                 }
             },
@@ -296,7 +303,7 @@ private fun DifficultyButton(
     Button(
         onClick = onClick,
         modifier = modifier
-            .height(70.dp)
+            .height(68.dp)
             .border(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.primary,
@@ -305,27 +312,24 @@ private fun DifficultyButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        ),
-        contentPadding = ButtonDefaults.ContentPadding
+        )
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 4.dp, vertical = 8.dp)
+            modifier = Modifier.padding(vertical = 6.dp)
         ) {
             Text(
                 text = difficulty.hebrewName,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                lineHeight = 16.sp
+                maxLines = 1
             )
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = difficulty.givens.toString(),
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
         }
