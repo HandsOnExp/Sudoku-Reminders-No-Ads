@@ -93,8 +93,8 @@ fun GameScreen(
     val isGameOver by viewModel.isGameOver.collectAsState()
     val wrongFlash by viewModel.wrongNumberFlash.collectAsState()
 
-    // Start new game if board is null
-    if (board == null) {
+    // Start new game if board is null or difficulty changed
+    if (board == null || board?.difficulty != difficulty) {
         viewModel.startNewGame(difficulty)
     }
 
