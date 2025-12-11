@@ -94,7 +94,7 @@ private fun NumberButton(
     Button(
         onClick = onClick,
         enabled = remainingCount > 0,
-        modifier = modifier.height(60.dp),
+        modifier = modifier.height(66.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -130,7 +130,7 @@ private fun ClearButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(60.dp),
+        modifier = modifier.height(66.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = MaterialTheme.colorScheme.onError
