@@ -302,37 +302,20 @@ private fun DifficultyButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier
-            .height(68.dp)
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = MaterialTheme.shapes.medium
-            ),
+        modifier = modifier.height(56.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        shape = MaterialTheme.shapes.large
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(vertical = 6.dp)
-        ) {
-            Text(
-                text = difficulty.hebrewName,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = difficulty.givens.toString(),
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center
-            )
-        }
+        Text(
+            text = difficulty.hebrewName,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            maxLines = 1
+        )
     }
 }
 
