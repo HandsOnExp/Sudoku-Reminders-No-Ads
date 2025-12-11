@@ -1,34 +1,38 @@
-# Sudoku WhatsApp Integration
+# Sudoku - Reminders, No Ads
 
-An Android Sudoku game with WhatsApp notification integration, designed for Hebrew-speaking users.
+A clean, ad-free Android Sudoku game with customizable reminder system, designed for Hebrew-speaking users.
 
 ## Overview
 
-This app allows users to play Sudoku while receiving filtered WhatsApp notifications from specific contacts and prayer groups, ensuring they don't miss important messages while enjoying the game.
+This app provides a distraction-free Sudoku experience with customizable reminders to help you take breaks during gameplay. Perfect for those who want to enjoy Sudoku without advertisements or interruptions.
 
-## Features (Planned)
+## Features
 
-### Phase 1: Project Setup ✅
-- Android project with Jetpack Compose and Material 3
-- Kotlin-based architecture
-- RTL (Right-to-Left) support for Hebrew
-- Basic project structure
+### ✅ Complete Sudoku Game
+- Full 9x9 Sudoku grid with clean, modern UI
+- Six difficulty levels: Beginner (45 givens), Easy (40), Medium (35), Hard (30), Expert (25), Extreme (20)
+- Smart number highlighting - tap a cell to highlight all occurrences of that number
+- Real-time error detection and validation
+- Mistake counter (max 3 mistakes per game)
+- Game timer
+- Pause/Resume functionality
+- RTL (Right-to-Left) support for Hebrew interface
 
-### Phase 2: Notification Listener (Upcoming)
-- WhatsApp notification monitoring
-- Real-time message filtering
-- Notification display during gameplay
+### ✅ Customizable Reminder System
+- Create multiple custom reminders with personalized messages
+- Set reminder intervals (20-45 minutes)
+- Queue system - multiple reminders stack and display one at a time
+- Duplicate detection - same reminder won't appear twice in queue
+- Counter showing "תזכורת 1 מתוך 3" when multiple reminders are queued
+- Enable/disable individual reminders
+- Persistent settings storage
 
-### Phase 3: Contact Management (Upcoming)
-- Room database for storing allowed contacts
-- Settings screen for managing contacts
-- Add/remove contacts and prayer groups
-
-### Phase 4: Sudoku Game (Upcoming)
-- Full 9x9 Sudoku grid
-- Multiple difficulty levels
-- Game controls and timer
-- Hebrew UI support
+### ✅ Modern UI Design
+- Material 3 design with clean, polished buttons
+- Solid color buttons with large rounded corners
+- No intrusive borders or frames
+- Intuitive number pad with remaining count display
+- Hebrew language support throughout
 
 ## Technical Specifications
 
@@ -43,10 +47,10 @@ This app allows users to play Sudoku while receiving filtered WhatsApp notificat
 - Jetpack Compose BOM
 - Compose Material 3
 - Navigation Compose
-- Room Database
-- DataStore Preferences
-- Kotlin Coroutines
+- DataStore Preferences (for settings persistence)
+- Kotlin Coroutines & Flow
 - ViewModel & Lifecycle components
+- Gson (for JSON serialization)
 
 ## Setup Instructions
 
@@ -55,36 +59,59 @@ This app allows users to play Sudoku while receiving filtered WhatsApp notificat
 3. Sync Gradle files
 4. Run the app on an Android device or emulator (API 26+)
 
-## Required Permissions
-
-- `BIND_NOTIFICATION_LISTENER_SERVICE` - For monitoring WhatsApp notifications
-- `POST_NOTIFICATIONS` - For displaying notifications (Android 13+)
-
 ## Project Structure
 
 ```
 com.sudokuwhatsapp.game/
 ├── data/
-│   ├── local/          # Room database entities and DAOs
-│   └── repository/     # Data repositories
-├── service/            # Background services (NotificationListener)
+│   ├── models/         # Data models (SudokuBoard, CustomReminder, etc.)
+│   └── repository/     # Settings repository
+├── game/               # Sudoku game logic (generator, validator, ViewModel)
+├── reminders/          # Reminder manager with queue system
 ├── ui/
-│   ├── screens/        # Compose screens
+│   ├── components/     # Reusable UI components (SudokuGrid, NumberPad)
+│   ├── screens/        # Compose screens (GameScreen, SettingsScreen)
 │   └── theme/          # App theming and colors
 └── MainActivity.kt     # Main entry point
 ```
 
-## Current Status
+## Game Features
 
-**Phase 1 Complete**: Basic project setup with RTL support and initial "Hello Sudoku" screen.
+### Difficulty Levels
+- **מתחיל (Beginner)**: 45 pre-filled cells - perfect for learning
+- **קל (Easy)**: 40 pre-filled cells - gentle challenge
+- **בינוני (Medium)**: 35 pre-filled cells - balanced gameplay
+- **קשה (Hard)**: 30 pre-filled cells - requires strategy
+- **מומחה (Expert)**: 25 pre-filled cells - for experienced players
+- **קיצוני (Extreme)**: 20 pre-filled cells - ultimate challenge
 
-## Future Development
+### Game Rules
+- Fill the 9x9 grid with numbers 1-9
+- Each row must contain all digits 1-9 without repetition
+- Each column must contain all digits 1-9 without repetition
+- Each 3x3 box must contain all digits 1-9 without repetition
+- Three mistakes allowed per game
 
-- Implement NotificationListenerService for WhatsApp monitoring
-- Build contact management system with Room database
-- Create complete Sudoku game logic and UI
-- Add game state persistence
-- Implement notification overlay during gameplay
+### Reminder Examples
+- "הפסקה לשתייה" (Drink water break)
+- "מתיחה קלה" (Light stretch)
+- "הפסקת עיניים" (Eye break)
+- "זמן לקום ולהתנועע" (Time to stand and move)
+
+## Recent Updates
+
+### Version 1.0
+- Implemented complete Sudoku game with six difficulty levels
+- Added customizable reminder system with queue management
+- Implemented number highlighting feature
+- Modernized UI with Material 3 design
+- Fixed RTL ordering for Hebrew interface
+- Added game timer and pause functionality
+- Removed WhatsApp integration (simplified to focus on core Sudoku experience)
+
+## Why No Ads?
+
+This app is built for players who value a clean, uninterrupted gaming experience. No advertisements, no tracking, just pure Sudoku enjoyment.
 
 ## License
 
