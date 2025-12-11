@@ -40,8 +40,8 @@ fun NumberPad(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+            .padding(horizontal = 8.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         // First row: 1-5
         Row(
@@ -94,7 +94,7 @@ private fun NumberButton(
     Button(
         onClick = onClick,
         enabled = remainingCount > 0,
-        modifier = modifier.height(56.dp),
+        modifier = modifier.height(60.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -130,7 +130,7 @@ private fun ClearButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(56.dp),
+        modifier = modifier.height(60.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = MaterialTheme.colorScheme.onError

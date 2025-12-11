@@ -207,7 +207,7 @@ fun GameScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(2.dp))
+                        Spacer(modifier = Modifier.height(0.dp))
 
                         // Number Pad
                         val remainingNumbers = remember(board) {
